@@ -4,11 +4,10 @@ Your reuse is governed by the Creative Commons Attribution 3.0 License
 --------------------------------------------------------------------------
 Release Date: 05/19/08
     Platform: ActionScript 3  
-     Version: 1 
-    Revision: 0
-       Minor: 4 
+     Version: 0 
+    Revision: 3
       Author:Cliff Hall <cliff.hall@puremvc.org>
      License: Creative Commons Attribution 3.0 United States License
 --------------------------------------------------------------------------
-1.0.4 Tests for 1.0.4 
+0.3 Tests for 0.3
 
