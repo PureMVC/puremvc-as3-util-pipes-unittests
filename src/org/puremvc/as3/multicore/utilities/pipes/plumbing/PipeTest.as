@@ -13,21 +13,24 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
  	/**
 	 * Test the Pipe class.
 	 */
-	public class PipeTest extends TestCase {
+	public class PipeTest extends TestCase 
+	{
   		
    		/**
   		 * Constructor.
   		 * 
   		 * @param methodName the name of the test method an instance to run
   		 */
- 	    public function PipeTest( methodName:String ) {
+ 	    public function PipeTest( methodName:String ) 
+ 	    {
    			super( methodName );
-           }
+        }
   	
  		/**
 		 * Create the TestSuite.
 		 */
- 		public static function suite():TestSuite {
+ 		public static function suite():TestSuite 
+ 		{
    			var ts:TestSuite = new TestSuite();
    			
    			ts.addTest( new PipeTest( "testConstructor" ) );
@@ -36,22 +39,25 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    		}
   		
   		/**
-  		 * Tests the constructor
+  		 * Test the constructor.
   		 */
-  		public function testConstructor():void {
+  		public function testConstructor():void 
+  		{
    			var pipe:IPipeFitting = new Pipe();
    			
    			// test assertions
    			assertTrue( "Expecting pipe is Pipe", pipe is Pipe );
    		}
 
-
   		/**
-  		 * Tests connecting two pipes 
+  		 * Test connecting two pipes. 
   		 */
-  		public function testConnectingTwoPipes():void {
+  		public function testConnectingTwoPipes():void 
+  		{
+  			// create two pipes
    			var pipe1:IPipeFitting = new Pipe();
    			var pipe2:IPipeFitting = new Pipe();
+   			// connect them
    			var success:Boolean = pipe1.connect(pipe2);
    			
    			// test assertions
