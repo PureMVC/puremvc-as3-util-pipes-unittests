@@ -34,11 +34,46 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
  		{
    			var ts:TestSuite = new TestSuite();
    			
+   			ts.addTest( new TeeMergeTest( "testConnectingIOPipes" ) );
    			ts.addTest( new TeeMergeTest( "testReceiveMessagesFromTwoPipesViaTeeMerge" ) );
    			ts.addTest( new TeeMergeTest( "testReceiveMessagesFromFourPipesViaTeeMerge" ) );
    			return ts;
    		}
   		
+  		/**
+  		 * Test connecting an output and several input pipes to a merging tee. 
+  		 */
+  		public function testConnectingIOPipes():void 
+  		{
+  			// create input pipe
+   			var output1:IPipeFitting = new Pipe();
+
+  			// create input pipes 1, 2, 3 and 4
+   			var pipe1:IPipeFitting = new Pipe();
+   			var pipe2:IPipeFitting = new Pipe();
+   			var pipe3:IPipeFitting = new Pipe();
+   			var pipe4:IPipeFitting = new Pipe();
+
+  			// create splitting tee (args are first two input fittings of tee)
+   			var teeMerge:TeeMerge = new TeeMerge( pipe1, pipe2 );
+   			
+   			// connect 2 extra inputs for a total of 4
+   			var connectedExtra1:Boolean = teeMerge.connectInput( pipe3 );
+   			var connectedExtra2:Boolean = teeMerge.connectInput( pipe4 );
+
+			// connect the single output
+			var connected:Boolean = output1.connect(teeMerge);
+			
+   			// test assertions
+   			assertTrue( "Expecting pipe1 is Pipe", pipe1 is Pipe );
+   			assertTrue( "Expecting pipe2 is Pipe", pipe2 is Pipe );
+   			assertTrue( "Expecting pipe3 is Pipe", pipe3 is Pipe );
+   			assertTrue( "Expecting pipe4 is Pipe", pipe4 is Pipe );
+   			assertTrue( "Expecting teeMerge is TeeMerge", teeMerge is TeeMerge );
+   			assertTrue( "Expecting connected extra input 1", connectedExtra1 );
+   			assertTrue( "Expecting connected extra input 2", connectedExtra2 );
+   		}
+
   		/**
   		 * Test receiving messages from two pipes using a TeeMerge.
   		 */
@@ -58,7 +93,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			var pipe1:IPipeFitting = new Pipe();
    			var pipe2:IPipeFitting = new Pipe();
    			
-  			// create merging tee
+  			// create merging tee (args are first two input fittings of tee)
    			var teeMerge:TeeMerge = new TeeMerge( pipe1, pipe2 );
 
 			// create listener
@@ -89,6 +124,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			// test message 1 assertions 
    			var message1:IPipeMessage = messagesReceived.shift() as IPipeMessage;
    			assertTrue( "Expecting message1 is IPipeMessage", message1 is IPipeMessage );
+   			assertTrue( "Expecting message1 === pipe1Message", message1 === pipe1Message ); // object equality
    			assertTrue( "Expecting message1.getType() == Message.TYPE_NORMAL", message1.getType() == Message.TYPE_NORMAL );
    			assertTrue( "Expecting message1.getHeader().testProp == 1", message1.getHeader().testProp == 1);
    			assertTrue( "Expecting message1.getBody().@testAtt == 'Pipe 1 Message'",  message1.getBody().@testAtt == 'Pipe 1 Message');
@@ -97,6 +133,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			// test message 2 assertions
    			var message2:IPipeMessage = messagesReceived.shift() as IPipeMessage;
    			assertTrue( "Expecting message2 is IPipeMessage", message2 is IPipeMessage );
+   			assertTrue( "Expecting message2 === pipe2Message", message2 === pipe2Message ); // object equality
    			assertTrue( "Expecting message2.getType() == Message.TYPE_NORMAL", message2.getType() == Message.TYPE_NORMAL );
    			assertTrue( "Expecting message2.getHeader().testProp == 2", message2.getHeader().testProp == 2);
    			assertTrue( "Expecting message2.getBody().@testAtt == 'Pipe 2 Message'",  message2.getBody().@testAtt == 'Pipe 2 Message');
@@ -164,24 +201,28 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			// test message 1 assertions 
    			var message1:IPipeMessage = messagesReceived.shift() as IPipeMessage;
    			assertTrue( "Expecting message1 is IPipeMessage", message1 is IPipeMessage );
+   			assertTrue( "Expecting message1 === pipe1Message", message1 === pipe1Message ); // object equality
    			assertTrue( "Expecting message1.getType() == Message.TYPE_NORMAL", message1.getType() == Message.TYPE_NORMAL );
    			assertTrue( "Expecting message1.getHeader().testProp == 1", message1.getHeader().testProp == 1);
 
    			// test message 2 assertions
    			var message2:IPipeMessage = messagesReceived.shift() as IPipeMessage;
    			assertTrue( "Expecting message2 is IPipeMessage", message2 is IPipeMessage );
+   			assertTrue( "Expecting message2 === pipe2Message", message2 === pipe2Message ); // object equality
    			assertTrue( "Expecting message2.getType() == Message.TYPE_NORMAL", message2.getType() == Message.TYPE_NORMAL );
    			assertTrue( "Expecting message2.getHeader().testProp == 2", message2.getHeader().testProp == 2);
 
    			// test message 3 assertions 
    			var message3:IPipeMessage = messagesReceived.shift() as IPipeMessage;
    			assertTrue( "Expecting message3 is IPipeMessage", message3 is IPipeMessage );
+   			assertTrue( "Expecting message3 === pipe3Message", message3 === pipe3Message ); // object equality
    			assertTrue( "Expecting message3.getType() == Message.TYPE_NORMAL", message3.getType() == Message.TYPE_NORMAL );
    			assertTrue( "Expecting message3.getHeader().testProp == 3", message3.getHeader().testProp == 3);
 
    			// test message 4 assertions
    			var message4:IPipeMessage = messagesReceived.shift() as IPipeMessage;
    			assertTrue( "Expecting message4 is IPipeMessage", message2 is IPipeMessage );
+   			assertTrue( "Expecting message4 === pipe4Message", message4 === pipe4Message ); // object equality
    			assertTrue( "Expecting message4.getType() == Message.TYPE_NORMAL", message4.getType() == Message.TYPE_NORMAL );
    			assertTrue( "Expecting message4.getHeader().testProp == 4", message4.getHeader().testProp == 4);
 
