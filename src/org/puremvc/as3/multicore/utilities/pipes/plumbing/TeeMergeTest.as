@@ -35,6 +35,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			var ts:TestSuite = new TestSuite();
    			
    			ts.addTest( new TeeMergeTest( "testReceiveMessagesFromTwoPipesViaTeeMerge" ) );
+   			ts.addTest( new TeeMergeTest( "testReceiveMessagesFromFourPipesViaTeeMerge" ) );
    			return ts;
    		}
   		
