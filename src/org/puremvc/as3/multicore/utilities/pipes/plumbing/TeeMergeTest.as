@@ -40,7 +40,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    		}
   		
   		/**
-  		 * Test receiving a message from two pipes using a TeeMerge.
+  		 * Test receiving messages from two pipes using a TeeMerge.
   		 */
   		public function testReceiveMessagesFromTwoPipesViaTeeMerge():void 
   		{
@@ -105,7 +105,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    		}
    		
   		/**
-  		 * Test receiving a message from four pipes using a TeeMerge.
+  		 * Test receiving messages from four pipes using a TeeMerge.
   		 */
   		public function testReceiveMessagesFromFourPipesViaTeeMerge():void 
   		{
