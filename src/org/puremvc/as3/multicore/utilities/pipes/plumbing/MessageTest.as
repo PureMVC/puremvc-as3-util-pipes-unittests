@@ -13,24 +13,21 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
  	/**
 	 * Test the Message class.
 	 */
-	public class MessageTest extends TestCase 
-	{
+	public class MessageTest extends TestCase {
   		
    		/**
   		 * Constructor.
   		 * 
   		 * @param methodName the name of the test method an instance to run
   		 */
- 	    public function MessageTest( methodName:String ) 
- 	    {
+ 	    public function MessageTest( methodName:String ) {
    			super( methodName );
-        }
+           }
   	
  		/**
 		 * Create the TestSuite.
 		 */
- 		public static function suite():TestSuite 
- 		{
+ 		public static function suite():TestSuite {
    			var ts:TestSuite = new TestSuite();
    			
    			ts.addTest( new MessageTest( "testConstructorAndGetters" ) );
@@ -40,12 +37,10 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    		}
 
   		/**
-  		 * Tests the constructor parameters and getters.
+  		 * Tests the constructor parameters and getters
   		 */
-  		public function testConstructorAndGetters():void 
-  		{
-   			// create a message with complete constructor args
-  			var message:IPipeMessage = new Message( Message.TYPE_NORMAL, 
+  		public function testConstructorAndGetters():void {
+   			var message:IPipeMessage = new Message( Message.TYPE_NORMAL, 
    													{ testProp:'testval' },
    													new XML(<testMessage testAtt='Hello'/>),
    													Message.PRIORITY_HIGH);
@@ -60,11 +55,9 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    		}
 
   		/**
-  		 * Tests message default priority.
+  		 * Tests message default priority
   		 */
-  		public function testDefaultPriority():void 
-  		{
-  			// Create a message with minimum constructor args
+  		public function testDefaultPriority():void {
    			var message:IPipeMessage = new Message( Message.TYPE_NORMAL, null );
    			
    			// test assertions
@@ -73,14 +66,11 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    		}
 
   		/**
-  		 * Tests the setters and getters.
+  		 * Tests the setters and getters
   		 */
-  		public function testSettersAndGetters():void 
-  		{
-  			// create a message with minimum constructor args
+  		public function testSettersAndGetters():void {
    			var message:IPipeMessage = new Message( Message.TYPE_NORMAL, null );
    			
-   			// Set remainder via setters
    			message.setHeader( { testProp:'testval' } );
    			message.setBody( new XML(<testMessage testAtt='Hello'/>) );
    			message.setPriority( Message.PRIORITY_LOW );
