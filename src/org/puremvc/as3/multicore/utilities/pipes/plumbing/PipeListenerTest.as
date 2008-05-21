@@ -62,7 +62,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
   		public function testReceiveMessageViaPipeListener():void 
   		{
 			// create a message
-   			var messageToSend:IPipeMessage = new Message( Message.TYPE_NORMAL, 
+   			var messageToSend:IPipeMessage = new Message( Message.NORMAL, 
    													      { testProp:'testval' },
    														  new XML(<testMessage testAtt='Hello'/>),
    													      Message.PRIORITY_HIGH );
@@ -79,7 +79,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			assertTrue( "Expecting connected listener to pipe", connected );
    			assertTrue( "Expecting wrote message to pipe", written );
    			assertTrue( "Expecting messageReceived is Message", messageReceived is Message );
-   			assertTrue( "Expecting messageReceived.getType() == Message.TYPE_NORMAL", messageReceived.getType() == Message.TYPE_NORMAL );
+   			assertTrue( "Expecting messageReceived.getType() == Message.NORMAL", messageReceived.getType() == Message.NORMAL );
    			assertTrue( "Expecting messageReceived.getHeader().testProp == 'testval'", messageReceived.getHeader().testProp == 'testval');
    			assertTrue( "Expecting messageReceived.getBody().@testAtt == 'Hello'",  messageReceived.getBody().@testAtt == 'Hello');
    			assertTrue( "Expecting messageReceived.getPriority() == Message.PRIORITY_HIGH",  messageReceived.getPriority() == Message.PRIORITY_HIGH);

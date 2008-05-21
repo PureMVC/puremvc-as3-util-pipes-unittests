@@ -81,7 +81,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
   		public function testReceiveMessagesFromTwoTeeSplitOutputs():void 
   		{
 			// create a message to send on pipe 1
-   			var message:IPipeMessage = new Message( Message.TYPE_NORMAL, { testProp: 1 });
+   			var message:IPipeMessage = new Message( Message.NORMAL, { testProp: 1 });
   			
   			// create output pipes 1 and 2
    			var pipe1:IPipeFitting = new Pipe();
@@ -108,7 +108,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			
    			// test that both messages were received, then test
    			// FIFO order by inspecting the messages themselves
-   			assertTrue( "Expecting received 2 messages", messagesReceived.length = 2 );
+   			assertTrue( "Expecting received 2 messages", messagesReceived.length == 2 );
    			
    			// test message 1 assertions 
    			var message1:IPipeMessage = messagesReceived.shift() as IPipeMessage;

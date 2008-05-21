@@ -45,14 +45,14 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
   		public function testConstructorAndGetters():void 
   		{
    			// create a message with complete constructor args
-  			var message:IPipeMessage = new Message( Message.TYPE_NORMAL, 
+  			var message:IPipeMessage = new Message( Message.NORMAL, 
    													{ testProp:'testval' },
    													new XML(<testMessage testAtt='Hello'/>),
    													Message.PRIORITY_HIGH);
    			
    			// test assertions
    			assertTrue( "Expecting message is Message", message is Message );
-   			assertTrue( "Expecting message.getType() == Message.TYPE_NORMAL", message.getType() == Message.TYPE_NORMAL );
+   			assertTrue( "Expecting message.getType() == Message.NORMAL", message.getType() == Message.NORMAL );
    			assertTrue( "Expecting message.getHeader().testProp == 'testval'", message.getHeader().testProp == 'testval');
    			assertTrue( "Expecting message.getBody().@testAtt == 'Hello'",  message.getBody().@testAtt == 'Hello');
    			assertTrue( "Expecting message.getPriority() == Message.PRIORITY_HIGH",  message.getPriority() == Message.PRIORITY_HIGH);
@@ -65,7 +65,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
   		public function testDefaultPriority():void 
   		{
   			// Create a message with minimum constructor args
-   			var message:IPipeMessage = new Message( Message.TYPE_NORMAL, null );
+   			var message:IPipeMessage = new Message( Message.NORMAL );
    			
    			// test assertions
    			assertTrue( "Expecting message.getPriority() == Message.PRIORITY_MED",  message.getPriority() == Message.PRIORITY_MED);
@@ -78,7 +78,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
   		public function testSettersAndGetters():void 
   		{
   			// create a message with minimum constructor args
-   			var message:IPipeMessage = new Message( Message.TYPE_NORMAL, null );
+   			var message:IPipeMessage = new Message( Message.NORMAL );
    			
    			// Set remainder via setters
    			message.setHeader( { testProp:'testval' } );
@@ -87,7 +87,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			
    			// test assertions
    			assertTrue( "Expecting message is Message", message is Message );
-   			assertTrue( "Expecting message.getType() == Message.TYPE_NORMAL", message.getType() == Message.TYPE_NORMAL );
+   			assertTrue( "Expecting message.getType() == Message.NORMAL", message.getType() == Message.NORMAL );
    			assertTrue( "Expecting message.getHeader().testProp == 'testval'", message.getHeader().testProp == 'testval');
    			assertTrue( "Expecting message.getBody().@testAtt == 'Hello'",  message.getBody().@testAtt == 'Hello');
    			assertTrue( "Expecting message.getPriority() == Message.PRIORITY_LOW",  message.getPriority() == Message.PRIORITY_LOW);

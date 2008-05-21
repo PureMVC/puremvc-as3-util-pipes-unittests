@@ -5,6 +5,7 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import org.puremvc.as3.multicore.utilities.pipes.plumbing.QueueTest;
 			import org.puremvc.as3.multicore.utilities.pipes.plumbing.TeeSplitTest;
 			import org.puremvc.as3.multicore.utilities.pipes.plumbing.TeeMergeTest;
 			import org.puremvc.as3.multicore.utilities.pipes.plumbing.PipeListenerTest;
@@ -28,6 +29,7 @@
  				ts.addTest( PipeListenerTest.suite() );
  				ts.addTest( TeeMergeTest.suite() );
  				ts.addTest( TeeSplitTest.suite() );
+ 				ts.addTest( QueueTest.suite() );
  				
  				return ts;
  			}

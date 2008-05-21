@@ -80,12 +80,12 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
   		public function testReceiveMessagesFromTwoPipesViaTeeMerge():void 
   		{
 			// create a message to send on pipe 1
-   			var pipe1Message:IPipeMessage = new Message( Message.TYPE_NORMAL, 
+   			var pipe1Message:IPipeMessage = new Message( Message.NORMAL, 
    													     { testProp: 1 },
    														  new XML(<testMessage testAtt='Pipe 1 Message'/>),
    													      Message.PRIORITY_LOW );
 			// create a message to send on pipe 2
-   			var pipe2Message:IPipeMessage = new Message( Message.TYPE_NORMAL, 
+   			var pipe2Message:IPipeMessage = new Message( Message.NORMAL, 
    													     { testProp: 2  },
    														  new XML(<testMessage testAtt='Pipe 2 Message'/>),
    													      Message.PRIORITY_HIGH );
@@ -119,13 +119,13 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			
    			// test that both messages were received, then test
    			// FIFO order by inspecting the messages themselves
-   			assertTrue( "Expecting received 2 messages", messagesReceived.length = 2 );
+   			assertTrue( "Expecting received 2 messages", messagesReceived.length == 2 );
    			
    			// test message 1 assertions 
    			var message1:IPipeMessage = messagesReceived.shift() as IPipeMessage;
    			assertTrue( "Expecting message1 is IPipeMessage", message1 is IPipeMessage );
    			assertTrue( "Expecting message1 === pipe1Message", message1 === pipe1Message ); // object equality
-   			assertTrue( "Expecting message1.getType() == Message.TYPE_NORMAL", message1.getType() == Message.TYPE_NORMAL );
+   			assertTrue( "Expecting message1.getType() == Message.NORMAL", message1.getType() == Message.NORMAL );
    			assertTrue( "Expecting message1.getHeader().testProp == 1", message1.getHeader().testProp == 1);
    			assertTrue( "Expecting message1.getBody().@testAtt == 'Pipe 1 Message'",  message1.getBody().@testAtt == 'Pipe 1 Message');
    			assertTrue( "Expecting message1.getPriority() == Message.PRIORITY_LOW",  message1.getPriority() == Message.PRIORITY_LOW);
@@ -134,7 +134,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			var message2:IPipeMessage = messagesReceived.shift() as IPipeMessage;
    			assertTrue( "Expecting message2 is IPipeMessage", message2 is IPipeMessage );
    			assertTrue( "Expecting message2 === pipe2Message", message2 === pipe2Message ); // object equality
-   			assertTrue( "Expecting message2.getType() == Message.TYPE_NORMAL", message2.getType() == Message.TYPE_NORMAL );
+   			assertTrue( "Expecting message2.getType() == Message.NORMAL", message2.getType() == Message.NORMAL );
    			assertTrue( "Expecting message2.getHeader().testProp == 2", message2.getHeader().testProp == 2);
    			assertTrue( "Expecting message2.getBody().@testAtt == 'Pipe 2 Message'",  message2.getBody().@testAtt == 'Pipe 2 Message');
    			assertTrue( "Expecting message2.getPriority() == Message.PRIORITY_HIGH",  message2.getPriority() == Message.PRIORITY_HIGH);
@@ -147,10 +147,10 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
   		public function testReceiveMessagesFromFourPipesViaTeeMerge():void 
   		{
 			// create a message to send on pipe 1
-   			var pipe1Message:IPipeMessage = new Message( Message.TYPE_NORMAL, { testProp: 1 } );
-   			var pipe2Message:IPipeMessage = new Message( Message.TYPE_NORMAL, { testProp: 2 } );
-   			var pipe3Message:IPipeMessage = new Message( Message.TYPE_NORMAL, { testProp: 3 } );
-   			var pipe4Message:IPipeMessage = new Message( Message.TYPE_NORMAL, { testProp: 4 } );
+   			var pipe1Message:IPipeMessage = new Message( Message.NORMAL, { testProp: 1 } );
+   			var pipe2Message:IPipeMessage = new Message( Message.NORMAL, { testProp: 2 } );
+   			var pipe3Message:IPipeMessage = new Message( Message.NORMAL, { testProp: 3 } );
+   			var pipe4Message:IPipeMessage = new Message( Message.NORMAL, { testProp: 4 } );
 
   			// create pipes 1, 2, 3 and 4
    			var pipe1:IPipeFitting = new Pipe();
@@ -196,34 +196,34 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			
    			// test that both messages were received, then test
    			// FIFO order by inspecting the messages themselves
-   			assertTrue( "Expecting received 4 messages", messagesReceived.length = 4 );
+   			assertTrue( "Expecting received 4 messages", messagesReceived.length == 4 );
    			
    			// test message 1 assertions 
    			var message1:IPipeMessage = messagesReceived.shift() as IPipeMessage;
    			assertTrue( "Expecting message1 is IPipeMessage", message1 is IPipeMessage );
    			assertTrue( "Expecting message1 === pipe1Message", message1 === pipe1Message ); // object equality
-   			assertTrue( "Expecting message1.getType() == Message.TYPE_NORMAL", message1.getType() == Message.TYPE_NORMAL );
+   			assertTrue( "Expecting message1.getType() == Message.NORMAL", message1.getType() == Message.NORMAL );
    			assertTrue( "Expecting message1.getHeader().testProp == 1", message1.getHeader().testProp == 1);
 
    			// test message 2 assertions
    			var message2:IPipeMessage = messagesReceived.shift() as IPipeMessage;
    			assertTrue( "Expecting message2 is IPipeMessage", message2 is IPipeMessage );
    			assertTrue( "Expecting message2 === pipe2Message", message2 === pipe2Message ); // object equality
-   			assertTrue( "Expecting message2.getType() == Message.TYPE_NORMAL", message2.getType() == Message.TYPE_NORMAL );
+   			assertTrue( "Expecting message2.getType() == Message.NORMAL", message2.getType() == Message.NORMAL );
    			assertTrue( "Expecting message2.getHeader().testProp == 2", message2.getHeader().testProp == 2);
 
    			// test message 3 assertions 
    			var message3:IPipeMessage = messagesReceived.shift() as IPipeMessage;
    			assertTrue( "Expecting message3 is IPipeMessage", message3 is IPipeMessage );
    			assertTrue( "Expecting message3 === pipe3Message", message3 === pipe3Message ); // object equality
-   			assertTrue( "Expecting message3.getType() == Message.TYPE_NORMAL", message3.getType() == Message.TYPE_NORMAL );
+   			assertTrue( "Expecting message3.getType() == Message.NORMAL", message3.getType() == Message.NORMAL );
    			assertTrue( "Expecting message3.getHeader().testProp == 3", message3.getHeader().testProp == 3);
 
    			// test message 4 assertions
    			var message4:IPipeMessage = messagesReceived.shift() as IPipeMessage;
    			assertTrue( "Expecting message4 is IPipeMessage", message2 is IPipeMessage );
    			assertTrue( "Expecting message4 === pipe4Message", message4 === pipe4Message ); // object equality
-   			assertTrue( "Expecting message4.getType() == Message.TYPE_NORMAL", message4.getType() == Message.TYPE_NORMAL );
+   			assertTrue( "Expecting message4.getType() == Message.NORMAL", message4.getType() == Message.NORMAL );
    			assertTrue( "Expecting message4.getHeader().testProp == 4", message4.getHeader().testProp == 4);
 
    		}
