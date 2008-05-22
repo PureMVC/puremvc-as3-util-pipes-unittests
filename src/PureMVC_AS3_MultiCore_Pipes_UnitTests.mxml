@@ -31,7 +31,7 @@
  				ts.addTest( TeeMergeTest.suite() );
  				ts.addTest( TeeSplitTest.suite() );
  				ts.addTest( QueueTest.suite() );	
- 				//ts.addTest( FilterTest.suite() );	
+ 				ts.addTest( FilterTest.suite() );	
  				
  				return ts;
  			}

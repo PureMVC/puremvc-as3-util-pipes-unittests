@@ -10,6 +10,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
 	
 	import org.puremvc.as3.multicore.utilities.pipes.interfaces.IPipeFitting;
 	import org.puremvc.as3.multicore.utilities.pipes.interfaces.IPipeMessage;
+	import org.puremvc.as3.multicore.utilities.pipes.messages.FilterControlMessage;
 	import org.puremvc.as3.multicore.utilities.pipes.messages.Message;
 	
  	/**
@@ -35,8 +36,11 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
  		{
    			var ts:TestSuite = new TestSuite();
    			
-   			ts.addTest( new QueueTest( "testConnectingIOPipes" ) );
-   			//ts.addTest( new QueueTest( "testWritingMultipleMessagesAndFlush" ) );
+   			ts.addTest( new FilterTest( "testConnectingIOPipes" ) );
+   			ts.addTest( new FilterTest( "testFilteringNormalMessage" ) );
+   			ts.addTest( new FilterTest( "testBypassAndFilterModeToggle" ) );
+   			ts.addTest( new FilterTest( "testSetParamsByControlMessage" ) );
+   			ts.addTest( new FilterTest( "testSetFilterByControlMessage" ) );
    			return ts;
    		}
   		
@@ -70,65 +74,181 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
   		
   		
   		/**
-  		 * Test writing multiple messages to the Queue followed by a Flush message.
+  		 * Test applying filter to a normal message.
   		 */
-  		public function testWritingMultipleMessagesAndFlush():void 
+  		public function testFilteringNormalMessage():void 
   		{
 			// create messages to send to the queue
-   			var message1:IPipeMessage = new Message( Message.NORMAL, { testProp: 1 });
-   			var message2:IPipeMessage = new Message( Message.NORMAL, { testProp: 2 });
-   			var message3:IPipeMessage = new Message( Message.NORMAL, { testProp: 3 });
+   			var message:IPipeMessage = new Message( Message.NORMAL, { width:10, height:2 });
   			
-			// create queue control flush message
-   			var flushCtlMessage:IPipeMessage = new Message( Queue.FLUSH  );
+  			// create filter, attach an anonymous listener to the filter output to receive the message,
+  			// pass in an anonymous function an parameter object
+   			var filter:Filter = new Filter( 'scale', 
+   											new PipeListener( this ,callBackMethod ),
+   											function( message:IPipeMessage, params:Object ):void { message.getHeader().width *= params.factor; message.getHeader().height *= params.factor;  },
+   											{ factor:10 }
+   										  );
 
-  			// create queue, attaching an anonymous listener to its output
-   			var queue:Queue= new Queue( new PipeListener( this ,callBackMethod ) );
-
-   			// write messages to the queue
-   			var message1written:Boolean = queue.write( message1 );
-   			var message2written:Boolean = queue.write( message2 );
-   			var message3written:Boolean = queue.write( message3 );
+   			// write messages to the filter
+   			var written:Boolean = filter.write( message );
    			
    			// test assertions
-			assertTrue( "Expecting message1 is IPipeMessage", message1 is IPipeMessage );
-			assertTrue( "Expecting message2 is IPipeMessage", message2 is IPipeMessage );
-			assertTrue( "Expecting message3 is IPipeMessage", message3 is IPipeMessage );
-			assertTrue( "Expecting flushCtlMessage is IPipeMessage", flushCtlMessage is IPipeMessage );
-			assertTrue( "Expecting queue is Queue", queue is Queue );
+			assertTrue( "Expecting message is IPipeMessage", message is IPipeMessage );
+			assertTrue( "Expecting filter is Filter", filter is Filter );
+   			assertTrue( "Expecting wrote message to filter", written );
+   			assertTrue( "Expecting received 1 messages", messagesReceived.length == 1 );
 
-   			assertTrue( "Expecting wrote message1 to queue", message1written );
-   			assertTrue( "Expecting wrote message2 to queue", message2written );
-   			assertTrue( "Expecting wrote message3 to queue", message3written );
-
-   			// test that no messages were received (they've been enqueued)
-   			assertTrue( "Expecting received 0 messages", messagesReceived.length == 0 );
-
-   			// write flush control message to the queue
-   			var flushWritten:Boolean = queue.write( flushCtlMessage );
-   			
-   			// test that all messages were received, then test
-   			// FIFO order by inspecting the messages themselves
-   			assertTrue( "Expecting received 3 messages", messagesReceived.length == 3 );
-   			
-   			// test message 1 assertions 
-   			var recieved1:IPipeMessage = messagesReceived.shift() as IPipeMessage;
-   			assertTrue( "Expecting recieved1 is IPipeMessage", recieved1 is IPipeMessage );
-   			assertTrue( "Expecting recieved1 === message1", recieved1 === message1 ); // object equality
-
-   			// test message 2 assertions
-   			var recieved2:IPipeMessage = messagesReceived.shift() as IPipeMessage;
-   			assertTrue( "Expecting recieved2 is IPipeMessage", recieved2 is IPipeMessage );
-   			assertTrue( "Expecting recieved2 === message2", recieved2 === message2 ); // object equality
-
-   			// test message 3 assertions
-   			var recieved3:IPipeMessage = messagesReceived.shift() as IPipeMessage;
-   			assertTrue( "Expecting recieved3 is IPipeMessage", recieved3 is IPipeMessage );
-   			assertTrue( "Expecting recieved3 === message3", recieved3 === message3 ); // object equality
-
+   			// test filtered message assertions 
+   			var recieved:IPipeMessage = messagesReceived.shift() as IPipeMessage;
+   			assertTrue( "Expecting recieved is IPipeMessage", recieved is IPipeMessage );
+   			assertTrue( "Expecting recieved === message", recieved === message ); // object equality
+   			assertTrue( "Expecting recieved.getHeader().width == 100", recieved.getHeader().width == 100 ); 
+   			assertTrue( "Expecting recieved.getHeader().height == 20", recieved.getHeader().height == 20 ); 
    		}
    		
-   		
+  		/**
+  		 * Test setting filter to bypass mode, writing, then setting back to filter mode and writing. 
+  		 */
+  		public function testBypassAndFilterModeToggle():void 
+  		{
+			// create messages to send to the queue
+   			var message:IPipeMessage = new Message( Message.NORMAL, { width:10, height:2 });
+  			
+  			// create filter, attach an anonymous listener to the filter output to receive the message,
+  			// pass in an anonymous function an parameter object
+   			var filter:Filter = new Filter( 'scale', 
+   											new PipeListener( this ,callBackMethod ),
+   											function( message:IPipeMessage, params:Object ):void { message.getHeader().width *= params.factor; message.getHeader().height *= params.factor;  },
+   											{ factor:10 }
+   										  );
+			
+			// create bypass control message	
+			var bypassMessage:FilterControlMessage = new FilterControlMessage(FilterControlMessage.BYPASS, 'scale');
+
+   			// write bypass control message to the filter
+   			var bypassWritten:Boolean = filter.write( bypassMessage );
+   			
+   			// write normal message to the filter
+   			var written1:Boolean = filter.write( message );
+   			
+   			// test assertions
+			assertTrue( "Expecting message is IPipeMessage", message is IPipeMessage );
+			assertTrue( "Expecting filter is Filter", filter is Filter );
+   			assertTrue( "Expecting wrote bypass message to filter", bypassWritten );
+   			assertTrue( "Expecting wrote normal message to filter", written1 );
+   			assertTrue( "Expecting received 1 messages", messagesReceived.length == 1 );
+
+   			// test filtered message assertions (no change to message)
+   			var recieved1:IPipeMessage = messagesReceived.shift() as IPipeMessage;
+   			assertTrue( "Expecting recieved1 is IPipeMessage", recieved1 is IPipeMessage );
+   			assertTrue( "Expecting recieved1 === message", recieved1 === message ); // object equality
+   			assertTrue( "Expecting recieved1.getHeader().width == 10", recieved1.getHeader().width == 10 ); 
+   			assertTrue( "Expecting recieved1.getHeader().height == 2", recieved1.getHeader().height == 2 ); 
+
+			// create filter control message	
+			var filterMessage:FilterControlMessage = new FilterControlMessage(FilterControlMessage.FILTER, 'scale');
+
+   			// write bypass control message to the filter
+   			var filterWritten:Boolean = filter.write( filterMessage );
+   			
+   			// write normal message to the filter again
+   			var written2:Boolean = filter.write( message );
+
+			// test assertions   			
+   			assertTrue( "Expecting wrote bypass message to filter", bypassWritten );
+   			assertTrue( "Expecting wrote normal message to filter", written1 );
+   			assertTrue( "Expecting received 1 messages", messagesReceived.length == 1 );
+
+   			// test filtered message assertions (message filtered)
+   			var recieved2:IPipeMessage = messagesReceived.shift() as IPipeMessage;
+   			assertTrue( "Expecting recieved2 is IPipeMessage", recieved2 is IPipeMessage );
+   			assertTrue( "Expecting recieved2 === message", recieved2 === message ); // object equality
+   			assertTrue( "Expecting recieved2.getHeader().width == 100", recieved2.getHeader().width == 100 ); 
+   			assertTrue( "Expecting recieved2.getHeader().height == 20", recieved2.getHeader().height == 20 );
+   		}
+
+  		/**
+  		 * Test setting filter parameters by sending control message. 
+  		 */
+  		public function testSetParamsByControlMessage():void 
+  		{
+			// create messages to send to the queue
+   			var message:IPipeMessage = new Message( Message.NORMAL, { width:10, height:2 });
+  			
+  			// create filter, attach an anonymous listener to the filter output to receive the message,
+  			// pass in an anonymous function an parameter object
+   			var filter:Filter = new Filter( 'scale', 
+   											new PipeListener( this ,callBackMethod ),
+   											function( message:IPipeMessage, params:Object ):void { message.getHeader().width *= params.factor; message.getHeader().height *= params.factor;  },
+   											{ factor:10 }
+   										  );
+			
+			// create setParams control message	
+			var setParamsMessage:FilterControlMessage = new FilterControlMessage(FilterControlMessage.SET_PARAMS, 'scale', null, {factor:5});
+
+   			// write filter control message to the filter
+   			var setParamsWritten:Boolean = filter.write( setParamsMessage );
+   			
+   			// write normal message to the filter
+   			var written:Boolean = filter.write( message );
+   			
+   			// test assertions
+			assertTrue( "Expecting message is IPipeMessage", message is IPipeMessage );
+			assertTrue( "Expecting filter is Filter", filter is Filter );
+   			assertTrue( "Expecting wrote bypass message to filter", setParamsWritten );
+   			assertTrue( "Expecting wrote normal message to filter", written );
+   			assertTrue( "Expecting received 1 messages", messagesReceived.length == 1 );
+
+   			// test filtered message assertions (message filtered with overridden parameters)
+   			var recieved:IPipeMessage = messagesReceived.shift() as IPipeMessage;
+   			assertTrue( "Expecting recieved is IPipeMessage", recieved is IPipeMessage );
+   			assertTrue( "Expecting recieved === message", recieved === message ); // object equality
+   			assertTrue( "Expecting recieved.getHeader().width == 50", recieved.getHeader().width == 50 ); 
+   			assertTrue( "Expecting recieved.getHeader().height == 10", recieved.getHeader().height == 10 ); 
+
+   		}
+
+  		/**
+  		 * Test setting filter function by sending control message. 
+  		 */
+  		public function testSetFilterByControlMessage():void 
+  		{
+			// create messages to send to the queue
+   			var message:IPipeMessage = new Message( Message.NORMAL, { width:10, height:2 });
+  			
+  			// create filter, attach an anonymous listener to the filter output to receive the message,
+  			// pass in an anonymous function an parameter object
+   			var filter:Filter = new Filter( 'scale', 
+   											new PipeListener( this ,callBackMethod ),
+   											function( message:IPipeMessage, params:Object ):void { message.getHeader().width *= params.factor; message.getHeader().height *= params.factor;  },
+   											{ factor:10 }
+   										  );
+			
+			// create setParams control message	
+			var setFilterMessage:FilterControlMessage = new FilterControlMessage(FilterControlMessage.SET_FILTER, 'scale', function( message:IPipeMessage, params:Object ):void { message.getHeader().width /= params.factor; message.getHeader().height /= params.factor;  } );
+
+   			// write filter control message to the filter
+   			var setFilterWritten:Boolean = filter.write( setFilterMessage );
+   			
+   			// write normal message to the filter
+   			var written:Boolean = filter.write( message );
+   			
+   			// test assertions
+			assertTrue( "Expecting message is IPipeMessage", message is IPipeMessage );
+			assertTrue( "Expecting filter is Filter", filter is Filter );
+   			assertTrue( "Expecting wrote bypass message to filter", setFilterWritten );
+   			assertTrue( "Expecting wrote normal message to filter", written );
+   			assertTrue( "Expecting received 1 messages", messagesReceived.length == 1 );
+
+   			// test filtered message assertions (message filtered with overridden filter function)
+   			var recieved:IPipeMessage = messagesReceived.shift() as IPipeMessage;
+   			assertTrue( "Expecting recieved is IPipeMessage", recieved is IPipeMessage );
+   			assertTrue( "Expecting recieved === message", recieved === message ); // object equality
+   			assertTrue( "Expecting recieved.getHeader().width == 1", recieved.getHeader().width == 1 ); 
+   			assertTrue( "Expecting recieved.getHeader().height == .2", recieved.getHeader().height == .2 ); 
+
+   		}
+
 		/**
 		 * Array of received messages.
 		 * <P>
