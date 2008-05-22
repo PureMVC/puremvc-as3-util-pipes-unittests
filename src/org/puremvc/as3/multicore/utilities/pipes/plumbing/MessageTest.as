@@ -9,6 +9,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
 	import flexunit.framework.TestSuite;
 	
 	import org.puremvc.as3.multicore.utilities.pipes.interfaces.IPipeMessage;
+	import org.puremvc.as3.multicore.utilities.pipes.messages.Message;
 	
  	/**
 	 * Test the Message class.

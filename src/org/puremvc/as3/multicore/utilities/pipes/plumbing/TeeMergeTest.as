@@ -10,6 +10,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
 	
 	import org.puremvc.as3.multicore.utilities.pipes.interfaces.IPipeFitting;
 	import org.puremvc.as3.multicore.utilities.pipes.interfaces.IPipeMessage;
+	import org.puremvc.as3.multicore.utilities.pipes.messages.Message;
 	
  	/**
 	 * Test the TeeMerge class.

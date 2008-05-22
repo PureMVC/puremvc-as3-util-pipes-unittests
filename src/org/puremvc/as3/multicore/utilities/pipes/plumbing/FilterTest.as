@@ -10,12 +10,12 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
 	
 	import org.puremvc.as3.multicore.utilities.pipes.interfaces.IPipeFitting;
 	import org.puremvc.as3.multicore.utilities.pipes.interfaces.IPipeMessage;
-	import org.puremvc.as3.multicore.utilities.pipes.messages.*;
+	import org.puremvc.as3.multicore.utilities.pipes.messages.Message;
 	
  	/**
-	 * Test the Queue class.
+	 * Test the Filter class.
 	 */
-	public class QueueTest extends TestCase 
+	public class FilterTest extends TestCase 
 	{
   		
    		/**
@@ -23,7 +23,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
   		 * 
   		 * @param methodName the name of the test method an instance to run
   		 */
- 	    public function QueueTest( methodName:String ) 
+ 	    public function FilterTest( methodName:String ) 
  	    {
    			super( methodName );
         }
@@ -36,13 +36,13 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			var ts:TestSuite = new TestSuite();
    			
    			ts.addTest( new QueueTest( "testConnectingIOPipes" ) );
-   			ts.addTest( new QueueTest( "testWritingMultipleMessagesAndFlush" ) );
+   			//ts.addTest( new QueueTest( "testWritingMultipleMessagesAndFlush" ) );
    			return ts;
    		}
   		
   		
   		/**
-  		 * Test connecting input and output pipes to a queue. 
+  		 * Test connecting input and output pipes to a filter. 
   		 */
   		public function testConnectingIOPipes():void 
   		{
@@ -51,19 +51,19 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			var pipe1:IPipeFitting = new Pipe();
    			var pipe2:IPipeFitting = new Pipe();
 
-  			// create queue
-   			var queue:Queue= new Queue( );
+  			// create filter
+   			var filter:Filter = new Filter( 'TestFilter' );
    			
    			// connect input fitting
-   			var connectedInput:Boolean 	= pipe1.connect( queue );
+   			var connectedInput:Boolean 	= pipe1.connect( filter );
    			
    			// connect output fitting
-   			var connectedOutput:Boolean = queue.connect( pipe2 );
+   			var connectedOutput:Boolean = filter.connect( pipe2 );
    			
    			// test assertions
    			assertTrue( "Expecting pipe1 is Pipe", pipe1 is Pipe );
    			assertTrue( "Expecting pipe2 is Pipe", pipe2 is Pipe );
-   			assertTrue( "Expecting queue is Queue", queue is Queue );
+   			assertTrue( "Expecting filter is Filter", filter is Filter );
    			assertTrue( "Expecting connected input", connectedInput );
    			assertTrue( "Expecting connected output", connectedOutput );
    		}
@@ -80,7 +80,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			var message3:IPipeMessage = new Message( Message.NORMAL, { testProp: 3 });
   			
 			// create queue control flush message
-   			var flush:IPipeMessage = new QueueControlMessage( QueueControlMessage.FLUSH );
+   			var flushCtlMessage:IPipeMessage = new Message( Queue.FLUSH  );
 
   			// create queue, attaching an anonymous listener to its output
    			var queue:Queue= new Queue( new PipeListener( this ,callBackMethod ) );
@@ -94,7 +94,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
 			assertTrue( "Expecting message1 is IPipeMessage", message1 is IPipeMessage );
 			assertTrue( "Expecting message2 is IPipeMessage", message2 is IPipeMessage );
 			assertTrue( "Expecting message3 is IPipeMessage", message3 is IPipeMessage );
-			assertTrue( "Expecting flush is IPipeMessage", flush is IPipeMessage );
+			assertTrue( "Expecting flushCtlMessage is IPipeMessage", flushCtlMessage is IPipeMessage );
 			assertTrue( "Expecting queue is Queue", queue is Queue );
 
    			assertTrue( "Expecting wrote message1 to queue", message1written );
@@ -105,7 +105,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			assertTrue( "Expecting received 0 messages", messagesReceived.length == 0 );
 
    			// write flush control message to the queue
-   			var flushWritten:Boolean = queue.write( flush );
+   			var flushWritten:Boolean = queue.write( flushCtlMessage );
    			
    			// test that all messages were received, then test
    			// FIFO order by inspecting the messages themselves
