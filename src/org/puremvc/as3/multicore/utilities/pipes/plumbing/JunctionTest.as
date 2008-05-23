@@ -10,6 +10,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
 	
 	import org.puremvc.as3.multicore.utilities.pipes.interfaces.IPipeFitting;
 	import org.puremvc.as3.multicore.utilities.pipes.interfaces.IPipeMessage;
+	import org.puremvc.as3.multicore.utilities.pipes.messages.Message;
 	
  	/**
 	 * Test the Junction class.
@@ -36,6 +37,8 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			
    			ts.addTest( new JunctionTest( "testRegisterRetrieveAndRemoveInputPipe" ) );
    			ts.addTest( new JunctionTest( "testRegisterRetrieveAndRemoveOutputPipe" ) );
+   			ts.addTest( new JunctionTest( "testAddingPipeListenerToAnInputPipe" ) );
+   			ts.addTest( new JunctionTest( "testSendMessageOnAnOutputPipe" ) );
    			return ts;
    		}
   		
@@ -118,13 +121,89 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			assertFalse( "Expecting pipe can't be retrieved from junction", junction.retrievePipe('testOutputPipe') === pipe ); 
    		}
    		
+  		/**
+  		 * Test adding a PipeListener to an Input Pipe.
+  		 * <P>
+  		 * Registers an INPUT Pipe with a Junction, then tests
+  		 * the Junction's addPipeListener method, connecting
+  		 * the output of the pipe back into to the test. If this
+  		 * is successful, it sends a message down the pipe and 
+  		 * checks to see that it was received.</P>
+ 		 */
+  		public function testAddingPipeListenerToAnInputPipe():void 
+  		{
+  			// create pipe 
+   			var pipe:IPipeFitting = new Pipe( );
+			
+			// create junction
+			var junction:Junction = new Junction();
+
+			// create test message
+			var message:IPipeMessage = new Message(Message.NORMAL, {testVal:1});
+			
+			// register the pipe with the junction, giving it a name and direction
+			var registered:Boolean=junction.registerPipe( 'testInputPipe', Junction.INPUT, pipe );
+
+			// add the pipelistener using the junction method
+			var listenerAdded:Boolean = junction.addPipeListener('testInputPipe', this, callBackMethod);
+						
+			// send the message using our reference to the pipe, 
+			// it should show up in messageReceived property via the pipeListener
+			var sent:Boolean = pipe.write(message); 
+			
+			// test assertions
+   			assertTrue( "Expecting pipe is Pipe", pipe is Pipe );
+   			assertTrue( "Expecting junction is Junction ", junction is Junction );
+   			assertTrue( "Expecting regsitered pipe", registered );
+   			assertTrue( "Expecting added pipeListener", listenerAdded );
+   			assertTrue( "Expecting successful write to pipe", sent );
+			assertTrue( "Expecting 1 message received", messagesReceived.length = 1); 
+			assertTrue( "Expecting received message was same instance sent", messagesReceived.pop() === message); //object equality
+			   			   			
+   		}
+   		
+  		/**
+  		 * Test using sendMessage on an OUTPUT pipe.
+ 		 */
+  		public function testSendMessageOnAnOutputPipe():void 
+  		{
+   			// create pipe 
+   			var pipe:IPipeFitting = new Pipe( );
+			
+			// create junction
+			var junction:Junction = new Junction();
+
+			// create test message
+			var message:IPipeMessage = new Message(Message.NORMAL, {testVal:1});
+			
+			// register the pipe with the junction, giving it a name and direction
+			var registered:Boolean=junction.registerPipe( 'testOutputPipe', Junction.OUTPUT, pipe );
+
+			// add a PipeListener manually 
+			var listenerAdded:Boolean = pipe.connect(new PipeListener(this, callBackMethod));
+						
+			// send the message using the Junction's method 
+			// it should show up in messageReceived property via the pipeListener
+			var sent:Boolean = junction.sendMessage('testOutputPipe',message);
+			
+			// test assertions
+   			assertTrue( "Expecting pipe is Pipe", pipe is Pipe );
+   			assertTrue( "Expecting junction is Junction ", junction is Junction );
+   			assertTrue( "Expecting regsitered pipe", registered );
+   			assertTrue( "Expecting added pipeListener", listenerAdded );
+   			assertTrue( "Expecting message sent", sent );
+			assertTrue( "Expecting 1 message received", messagesReceived.length = 1); 
+			assertTrue( "Expecting received message was same instance sent", messagesReceived.pop() === message); //object equality
+   		}
+   		
+   		
 		/**
-		 * Recipient of message.
+		 * Array of received messages.
 		 * <P>
 		 * Used by <code>callBackMedhod</code> as a place to store
-		 * the recieved message.</P>
+		 * the recieved messages.</P>
 		 */     		
-   		private var messageReceived:IPipeMessage;
+   		private var messagesReceived:Array = new Array();
    		
    		/**
    		 * Callback given to <code>PipeListener</code> for incoming message.
@@ -133,9 +212,9 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    		 * to get the output of pipe back into this  test to see 
    		 * that a message passes through the pipe.</P>
    		 */
-   		private function callBackMethod(message:IPipeMessage):void
+   		private function callBackMethod( message:IPipeMessage ):void
    		{
-   			this.messageReceived = message;
+   			this.messagesReceived.push( message );
    		}
    		
 	}
