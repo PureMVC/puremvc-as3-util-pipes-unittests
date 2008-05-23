@@ -72,7 +72,13 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
   		
   		/**
   		 * Test writing multiple messages to the Queue followed by a Flush message.
-  		 */
+   		 * <P>
+  		 * Creates messages to send to the queue. 
+  		 * Creates queue, attaching an anonymous listener to its output.
+  		 * Writes messages to the queue. Tests that no messages have been
+  		 * received yet (they've been enqueued). Sends FLUSH message. Tests
+  		 * that messages were receieved, and in the order sent (FIFO).<P>
+ 		 */
   		public function testWritingMultipleMessagesAndFlush():void 
   		{
 			// create messages to send to the queue
@@ -130,7 +136,19 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    		}
    		
   		/**
-  		 * Test the Sort-by-Priority and FIFO modes. 
+  		 * Test the Sort-by-Priority and FIFO modes.
+  		 * <P>
+  		 * Creates messages to send to the queue, priorities unsorted. 
+  		 * Creates queue, attaching an anonymous listener to its output.
+  		 * Sends SORT message to start sort-by-priority order mode.
+  		 * Writes messages to the queue. Sends FLUSH message, tests
+  		 * that messages were receieved in order of priority, not how
+  		 * they were sent.<P>
+  		 * <P>
+  		 * Then sends a FIFO message to switch the queue back to
+  		 * default FIFO behavior, sends messages again, flushes again,
+  		 * tests that the messages were recieved and in the order they
+  		 * were originally sent.</P>
   		 */
   		public function testSortByPriorityAndFIFO():void 
   		{

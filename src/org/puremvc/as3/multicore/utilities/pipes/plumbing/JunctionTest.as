@@ -164,12 +164,21 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    		
   		/**
   		 * Test using sendMessage on an OUTPUT pipe.
+  		 * <P>
+  		 * Creates a Pipe, Junction and Message. 
+  		 * Adds the PipeListener to the Pipe.
+  		 * Adds the Pipe to the Junction as an OUTPUT pipe.
+  		 * uses the Junction's sendMessage method to send
+  		 * the Message, then checks that it was received.</P>
  		 */
   		public function testSendMessageOnAnOutputPipe():void 
   		{
    			// create pipe 
    			var pipe:IPipeFitting = new Pipe( );
 			
+			// add a PipeListener manually 
+			var listenerAdded:Boolean = pipe.connect(new PipeListener(this, callBackMethod));
+						
 			// create junction
 			var junction:Junction = new Junction();
 
@@ -179,9 +188,6 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
 			// register the pipe with the junction, giving it a name and direction
 			var registered:Boolean=junction.registerPipe( 'testOutputPipe', Junction.OUTPUT, pipe );
 
-			// add a PipeListener manually 
-			var listenerAdded:Boolean = pipe.connect(new PipeListener(this, callBackMethod));
-						
 			// send the message using the Junction's method 
 			// it should show up in messageReceived property via the pipeListener
 			var sent:Boolean = junction.sendMessage('testOutputPipe',message);

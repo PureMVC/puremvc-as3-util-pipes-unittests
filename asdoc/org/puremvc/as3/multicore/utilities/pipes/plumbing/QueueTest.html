@@ -4,7 +4,7 @@
 <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../../../../../../style.css" type="text/css" media="screen">
 <link rel="stylesheet" href="../../../../../../../print.css" type="text/css" media="print">
-<meta content="QueueTest,org.puremvc.as3.multicore.utilities.pipes.plumbing.QueueTest,suite,testConnectingIOPipes,testWritingMultipleMessagesAndFlush" name="keywords">
+<meta content="QueueTest,org.puremvc.as3.multicore.utilities.pipes.plumbing.QueueTest,suite,testConnectingIOPipes,testSortByPriorityAndFIFO,testWritingMultipleMessagesAndFlush" name="keywords">
 <title>org.puremvc.as3.multicore.utilities.pipes.plumbing.QueueTest</title>
 </head>
 <body>
@@ -81,6 +81,14 @@ if (!isEclipse() || window.name != ECLIPSE_FRAME_NAME) {titleBar_setSubTitle("Cl
 <tr class="">
 <td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
 <div class="summarySignature">
+<a class="signatureLink" href="#testSortByPriorityAndFIFO()">testSortByPriorityAndFIFO</a>():void</div>
+<div class="summaryTableDescription">
+     Test the Sort-by-Priority and FIFO modes.</div>
+</td><td class="summaryTableOwnerCol">QueueTest</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
 <a class="signatureLink" href="#testWritingMultipleMessagesAndFlush()">testWritingMultipleMessagesAndFlush</a>():void</div>
 <div class="summaryTableDescription">
      Test writing multiple messages to the Queue followed by a Flush message.</div>
@@ -142,6 +150,28 @@ showHideInherited();
 <code>public function testConnectingIOPipes():void</code><p>
      Test connecting input and output pipes to a queue. 
      </p></div>
+<a name="testSortByPriorityAndFIFO()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">testSortByPriorityAndFIFO</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function testSortByPriorityAndFIFO():void</code><p>
+     Test the Sort-by-Priority and FIFO modes.
+     <P>
+     Creates messages to send to the queue, priorities unsorted. 
+     Creates queue, attaching an anonymous listener to its output.
+     Sends SORT message to start sort-by-priority order mode.
+     Writes messages to the queue. Sends FLUSH message, tests
+     that messages were receieved in order of priority, not how
+     they were sent.<P>
+     <P>
+     Then sends a FIFO message to switch the queue back to
+     default FIFO behavior, sends messages again, flushes again,
+     tests that the messages were recieved and in the order they
+     were originally sent.</P>
+     </p></div>
 <a name="testWritingMultipleMessagesAndFlush()"></a>
 <table cellspacing="0" cellpadding="0" class="detailHeader">
 <tr>
@@ -151,7 +181,13 @@ showHideInherited();
 <div class="detailBody">
 <code>public function testWritingMultipleMessagesAndFlush():void</code><p>
      Test writing multiple messages to the Queue followed by a Flush message.
-     </p></div>
+      <P>
+     Creates messages to send to the queue. 
+     Creates queue, attaching an anonymous listener to its output.
+     Writes messages to the queue. Tests that no messages have been
+     received yet (they've been enqueued). Sends FLUSH message. Tests
+     that messages were receieved, and in the order sent (FIFO).<P>
+    </p></div>
 <br>
 <br>
 <hr>
