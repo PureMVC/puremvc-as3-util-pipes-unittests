@@ -35,16 +35,21 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
  		{
    			var ts:TestSuite = new TestSuite();
    			
-   			ts.addTest( new TeeSplitTest( "testConnectingIOPipes" ) );
+   			ts.addTest( new TeeSplitTest( "testConnectingAndDisconnectingIOPipes" ) );
    			ts.addTest( new TeeSplitTest( "testReceiveMessagesFromTwoTeeSplitOutputs" ) );
    			return ts;
    		}
   		
   		
   		/**
-  		 * Test connecting an input and several output pipes to a splitting tee. 
+  		 * Test connecting and disconnecting I/O Pipes.
+  		 * 
+  		 * <P>
+  		 * Connect an input and several output pipes to a splitting tee. 
+  		 * Then disconnect all outputs in LIFO order by calling disconnect 
+  		 * repeatedly.</P>
   		 */
-  		public function testConnectingIOPipes():void 
+  		public function testConnectingAndDisconnectingIOPipes():void 
   		{
   			// create input pipe
    			var input1:IPipeFitting = new Pipe();
@@ -71,8 +76,14 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			assertTrue( "Expecting pipe3 is Pipe", pipe3 is Pipe );
    			assertTrue( "Expecting pipe4 is Pipe", pipe4 is Pipe );
    			assertTrue( "Expecting teeSplit is TeeSplit", teeSplit is TeeSplit );
-   			assertTrue( "Expecting connected extra output 1", connectedExtra1 );
-   			assertTrue( "Expecting connected extra output 2", connectedExtra2 );
+   			assertTrue( "Expecting connected pipe 3", connectedExtra1 );
+   			assertTrue( "Expecting connected pipe 4", connectedExtra2 );
+   			
+   			// test LIFO order of output disconnection
+   			assertTrue( "Expecting disconnected pipe 4", teeSplit.disconnect() === pipe4 );
+   			assertTrue( "Expecting disconnected pipe 3", teeSplit.disconnect() === pipe3 );
+   			assertTrue( "Expecting disconnected pipe 2", teeSplit.disconnect() === pipe2 );
+   			assertTrue( "Expecting disconnected pipe 1", teeSplit.disconnect() === pipe1 );
    		}
   		
   		
