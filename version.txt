@@ -5,10 +5,11 @@ Your reuse is governed by the Creative Commons Attribution 3.0 License
 Release Date: 05/21/08
     Platform: ActionScript 3  
      Version: 0 
-    Revision: 7
+    Revision: 8
       Author: Cliff Hall <cliff.hall@puremvc.org>
      License: Creative Commons Attribution 3.0 United States License
 --------------------------------------------------------------------------
+0.8 Tests for Pipes 0.8 // all classes and methods tested now
 0.7 Tests for Pipes 0.7
 0.6 Tests for Pipes 0.6
 0.5 Tests for Pipes 0.5
