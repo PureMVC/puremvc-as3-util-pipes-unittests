@@ -34,8 +34,8 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
  		{
    			var ts:TestSuite = new TestSuite();
    			
-   			ts.addTest( new JunctionTest( "testRegisteringAndRetrievingAnInputPipe" ) );
-   			ts.addTest( new JunctionTest( "testRegisteringAndRetrievingAnOutputPipe" ) );
+   			ts.addTest( new JunctionTest( "testRegisterRetrieveAndRemoveInputPipe" ) );
+   			ts.addTest( new JunctionTest( "testRegisterRetrieveAndRemoveOutputPipe" ) );
    			return ts;
    		}
   		
@@ -45,8 +45,12 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
   		 * Tests that the INPUT pipe is successfully registered and
   		 * that the hasPipe and hasInputPipe methods work. Then tests
   		 * that the pipe can be retrieved by name.</P>
+  		 * <P>
+  		 * Finally, it removes the registered INPUT pipe and tests
+  		 * that all the previous assertions about it's registration
+  		 * and accessability via the Junction are no longer true</P>
   		 */
-  		public function testRegisteringAndRetrievingAnInputPipe():void 
+  		public function testRegisterRetrieveAndRemoveInputPipe():void 
   		{
   			// create pipe connected to this test with a pipelistener
    			var pipe:IPipeFitting = new Pipe( );
@@ -82,7 +86,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
   		 * that the hasPipe and hasOutputPipe methods work. Then tests
   		 * that the pipe can be retrieved by name.</P>
   		 */
-  		public function testRegisteringAndRetrievingAnOutputPipe():void 
+  		public function testRegisterRetrieveAndRemoveOutputPipe():void 
   		{
   			// create pipe connected to this test with a pipelistener
    			var pipe:IPipeFitting = new Pipe( );
