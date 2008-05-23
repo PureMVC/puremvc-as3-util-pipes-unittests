@@ -36,7 +36,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
  		{
    			var ts:TestSuite = new TestSuite();
    			
-   			ts.addTest( new FilterTest( "testConnectingIOPipes" ) );
+   			ts.addTest( new FilterTest( "testConnectingAndDisconnectingIOPipes" ) );
    			ts.addTest( new FilterTest( "testFilteringNormalMessage" ) );
    			ts.addTest( new FilterTest( "testBypassAndFilterModeToggle" ) );
    			ts.addTest( new FilterTest( "testSetParamsByControlMessage" ) );
@@ -46,9 +46,9 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
   		
   		
   		/**
-  		 * Test connecting input and output pipes to a filter. 
+  		 * Test connecting input and output pipes to a filter as well as disconnecting the output.
   		 */
-  		public function testConnectingIOPipes():void 
+  		public function testConnectingAndDisconnectingIOPipes():void 
   		{
 
   			// create output pipes 1
@@ -70,6 +70,10 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			assertTrue( "Expecting filter is Filter", filter is Filter );
    			assertTrue( "Expecting connected input", connectedInput );
    			assertTrue( "Expecting connected output", connectedOutput );
+   			
+   			// disconnect pipe 2 from filter
+   			var disconnectedPipe:IPipeFitting = filter.disconnect();
+   			assertTrue( "Expecting disconnected pipe2 from filter", disconnectedPipe === pipe2 );
    		}
   		
   		
