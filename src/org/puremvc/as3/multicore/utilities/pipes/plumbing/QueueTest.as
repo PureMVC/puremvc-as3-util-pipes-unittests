@@ -37,6 +37,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			
    			ts.addTest( new QueueTest( "testConnectingIOPipes" ) );
    			ts.addTest( new QueueTest( "testWritingMultipleMessagesAndFlush" ) );
+   			ts.addTest( new QueueTest( "testSortByPriorityAndFIFO" ) );
    			return ts;
    		}
   		
@@ -128,6 +129,87 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
 
    		}
    		
+  		/**
+  		 * Test the Sort-by-Priority and FIFO modes. 
+  		 */
+  		public function testSortByPriorityAndFIFO():void 
+  		{
+			// create messages to send to the queue
+   			var message1:IPipeMessage = new Message( Message.NORMAL,null,null,Message.PRIORITY_MED);
+   			var message2:IPipeMessage = new Message( Message.NORMAL,null,null,Message.PRIORITY_LOW);
+   			var message3:IPipeMessage = new Message( Message.NORMAL,null,null,Message.PRIORITY_HIGH);
+  			
+  			// create queue, attaching an anonymous listener to its output
+   			var queue:Queue= new Queue( new PipeListener( this ,callBackMethod ) );
+   			
+   			// begin sort-by-priority order mode
+			var sortWritten:Boolean = queue.write(new QueueControlMessage( QueueControlMessage.SORT ));
+			
+   			// write messages to the queue
+   			var message1written:Boolean = queue.write( message1 );
+   			var message2written:Boolean = queue.write( message2 );
+   			var message3written:Boolean = queue.write( message3 );
+			
+			// flush the queue
+			var flushWritten:Boolean = queue.write(new QueueControlMessage( QueueControlMessage.FLUSH ));
+			   			
+   			// test assertions
+   			assertTrue( "Expecting wrote sort message to queue", sortWritten);
+   			assertTrue( "Expecting wrote message1 to queue", message1written );
+   			assertTrue( "Expecting wrote message2 to queue", message2written );
+   			assertTrue( "Expecting wrote message3 to queue", message3written );
+   			assertTrue( "Expecting wrote flush message to queue", flushWritten);
+
+   			// test that 3 messages were received
+   			assertTrue( "Expecting received 3 messages", messagesReceived.length == 3 );
+
+   			// get the messages
+   			var recieved1:IPipeMessage = messagesReceived.shift() as IPipeMessage;
+   			var recieved2:IPipeMessage = messagesReceived.shift() as IPipeMessage;
+   			var recieved3:IPipeMessage = messagesReceived.shift() as IPipeMessage;
+
+   			// test that the message order is sorted 
+			assertTrue( "Expecting recieved1 is higher priority than recieved 2", recieved1.getPriority() < recieved2.getPriority()); 
+			assertTrue( "Expecting recieved2 is higher priority than recieved 3", recieved2.getPriority() < recieved3.getPriority()); 
+   			assertTrue( "Expecting recieved1 === message3", recieved1 === message3 ); // object equality
+   			assertTrue( "Expecting recieved2 === message1", recieved2 === message1 ); // object equality
+   			assertTrue( "Expecting recieved3 === message2", recieved3 === message2 ); // object equality
+
+   			// begin FIFO order mode
+			var fifoWritten:Boolean = queue.write(new QueueControlMessage( QueueControlMessage.FIFO ));
+
+   			// write messages to the queue
+   			var message1writtenAgain:Boolean = queue.write( message1 );
+   			var message2writtenAgain:Boolean = queue.write( message2 );
+   			var message3writtenAgain:Boolean = queue.write( message3 );
+			
+			// flush the queue
+			var flushWrittenAgain:Boolean = queue.write(new QueueControlMessage( QueueControlMessage.FLUSH ));
+			   			
+   			// test assertions
+   			assertTrue( "Expecting wrote fifo message to queue", fifoWritten);
+   			assertTrue( "Expecting wrote message1 to queue again", message1writtenAgain );
+   			assertTrue( "Expecting wrote message2 to queue again", message2writtenAgain );
+   			assertTrue( "Expecting wrote message3 to queue again", message3writtenAgain );
+   			assertTrue( "Expecting wrote flush message to queue again", flushWrittenAgain);
+
+   			// test that 3 messages were received 
+   			assertTrue( "Expecting received 3 messages", messagesReceived.length == 3 );
+
+   			// get the messages
+   			var recieved1Again:IPipeMessage = messagesReceived.shift() as IPipeMessage;
+   			var recieved2Again:IPipeMessage = messagesReceived.shift() as IPipeMessage;
+   			var recieved3Again:IPipeMessage = messagesReceived.shift() as IPipeMessage;
+
+   			// test message order is FIFO
+   			assertTrue( "Expecting recieved1Again === message1", recieved1Again === message1 ); // object equality
+   			assertTrue( "Expecting recieved2Again === message2", recieved2Again === message2 ); // object equality
+   			assertTrue( "Expecting recieved3Again === message3", recieved3Again === message3 ); // object equality
+			assertTrue( "Expecting recieved1Again is priority med ", recieved1Again.getPriority() == Message.PRIORITY_MED); 
+			assertTrue( "Expecting recieved2Again is priority low ", recieved2Again.getPriority() == Message.PRIORITY_LOW); 
+			assertTrue( "Expecting recieved3Again is priority high ", recieved3Again.getPriority() == Message.PRIORITY_HIGH); 
+
+   		}
    		
 		/**
 		 * Array of received messages.

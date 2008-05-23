@@ -25,7 +25,7 @@
 			private function createSuite():TestSuite {
 				
  				var ts:TestSuite = new TestSuite();
-
+				
  				ts.addTest( MessageTest.suite() );
  				ts.addTest( PipeTest.suite() );
  				ts.addTest( PipeListenerTest.suite() );
