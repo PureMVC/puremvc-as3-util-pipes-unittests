@@ -68,7 +68,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			
    			// disconnect pipe 2 from pipe 1
    			var disconnectedPipe:IPipeFitting = pipe1.disconnect();
-   			assertTrue( "Expecting disconnected pipe2 from  to pipe1", disconnectedPipe === pipe2 );
+   			assertTrue( "Expecting disconnected pipe2 from pipe1", disconnectedPipe === pipe2 );
 			
    		}
    		
