@@ -48,7 +48,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
   		 * <P>
   		 * Finally, it removes the registered INPUT pipe and tests
   		 * that all the previous assertions about it's registration
-  		 * and accessability via the Junction are no longer true</P>
+  		 * and accessability via the Junction are no longer true.</P>
   		 */
   		public function testRegisterRetrieveAndRemoveInputPipe():void 
   		{
@@ -85,7 +85,11 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
   		 * Tests that the OUTPUT pipe is successfully registered and
   		 * that the hasPipe and hasOutputPipe methods work. Then tests
   		 * that the pipe can be retrieved by name.</P>
-  		 */
+   		 * <P>
+  		 * Finally, it removes the registered OUTPUT pipe and tests
+  		 * that all the previous assertions about it's registration
+  		 * and accessability via the Junction are no longer true.</P>
+ 		 */
   		public function testRegisterRetrieveAndRemoveOutputPipe():void 
   		{
   			// create pipe connected to this test with a pipelistener
