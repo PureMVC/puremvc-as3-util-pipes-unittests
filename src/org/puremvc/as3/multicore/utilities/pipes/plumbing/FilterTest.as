@@ -41,6 +41,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			ts.addTest( new FilterTest( "testBypassAndFilterModeToggle" ) );
    			ts.addTest( new FilterTest( "testSetParamsByControlMessage" ) );
    			ts.addTest( new FilterTest( "testSetFilterByControlMessage" ) );
+   			ts.addTest( new FilterTest( "testUseFilterToStopAMessage" ) );
    			return ts;
    		}
   		
@@ -199,7 +200,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			// test assertions
 			assertTrue( "Expecting message is IPipeMessage", message is IPipeMessage );
 			assertTrue( "Expecting filter is Filter", filter is Filter );
-   			assertTrue( "Expecting wrote bypass message to filter", setParamsWritten );
+   			assertTrue( "Expecting wrote set_params message to filter", setParamsWritten );
    			assertTrue( "Expecting wrote normal message to filter", written );
    			assertTrue( "Expecting received 1 messages", messagesReceived.length == 1 );
 
@@ -221,14 +222,14 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			var message:IPipeMessage = new Message( Message.NORMAL, { width:10, height:2 });
   			
   			// create filter, attach an anonymous listener to the filter output to receive the message,
-  			// pass in an anonymous function an parameter object
+  			// pass in an anonymous function and an anonymous parameter object
    			var filter:Filter = new Filter( 'scale', 
    											new PipeListener( this ,callBackMethod ),
    											function( message:IPipeMessage, params:Object ):void { message.getHeader().width *= params.factor; message.getHeader().height *= params.factor;  },
    											{ factor:10 }
    										  );
 			
-			// create setParams control message	
+			// create setFilter control message	
 			var setFilterMessage:FilterControlMessage = new FilterControlMessage(FilterControlMessage.SET_FILTER, 'scale', function( message:IPipeMessage, params:Object ):void { message.getHeader().width /= params.factor; message.getHeader().height /= params.factor;  } );
 
    			// write filter control message to the filter
@@ -240,7 +241,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			// test assertions
 			assertTrue( "Expecting message is IPipeMessage", message is IPipeMessage );
 			assertTrue( "Expecting filter is Filter", filter is Filter );
-   			assertTrue( "Expecting wrote bypass message to filter", setFilterWritten );
+   			assertTrue( "Expecting wrote message to filter", setFilterWritten );
    			assertTrue( "Expecting wrote normal message to filter", written );
    			assertTrue( "Expecting received 1 messages", messagesReceived.length == 1 );
 
@@ -250,6 +251,59 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			assertTrue( "Expecting recieved === message", recieved === message ); // object equality
    			assertTrue( "Expecting recieved.getHeader().width == 1", recieved.getHeader().width == 1 ); 
    			assertTrue( "Expecting recieved.getHeader().height == .2", recieved.getHeader().height == .2 ); 
+
+   		}
+
+  		/**
+  		 * Test using a filter function to stop propagation of a message. 
+  		 * <P>
+  		 * The way to stop propagation of a message from within a filter
+  		 * is to throw an error from the filter function. This test creates
+  		 * two NORMAL messages, each with header objects that contain 
+  		 * a <code>bozoLevel</code> property. One has this property set to 
+  		 * 10, the other to 3.</P>
+  		 * <P>
+  		 * Creates a Filter, named 'bozoFilter' with an anonymous pipe listener
+  		 * feeding the output back into this test. The filter funciton is an 
+  		 * anonymous function that throws an error if the message's bozoLevel 
+  		 * property is greater than the filter parameter <code>bozoThreshold</code>.
+  		 * the anonymous filter parameters object has a <code>bozoThreshold</code>
+  		 * value of 5.</P>
+  		 * <P>
+  		 * The messages are written to the filter and it is shown that the 
+  		 * message with the <code>bozoLevel</code> of 10 is not written, while
+  		 * the message with the <code>bozoLevel</code> of 3 is.</P> 
+  		 */
+  		public function testUseFilterToStopAMessage():void 
+  		{
+			// create messages to send to the queue
+   			var message1:IPipeMessage = new Message( Message.NORMAL, { bozoLevel:10, user:'Dastardly Dan'} );
+   			var message2:IPipeMessage = new Message( Message.NORMAL, { bozoLevel:3, user:'Dudley Doright'} );
+  			
+  			// create filter, attach an anonymous listener to the filter output to receive the message,
+  			// pass in an anonymous function and an anonymous parameter object
+   			var filter:Filter = new Filter( 'bozoFilter', 
+   											new PipeListener( this ,callBackMethod ),
+   											function( message:IPipeMessage, params:Object ):void { if (message.getHeader().bozoLevel > params.bozoThreshold) throw new Error('bozoFiltered'); },
+   											{ bozoThreshold:5 }
+   										  );
+			
+   			// write normal message to the filter
+   			var written1:Boolean = filter.write( message1 );
+   			var written2:Boolean = filter.write( message2 );
+   			
+   			// test assertions
+			assertTrue( "Expecting message is IPipeMessage", message1 is IPipeMessage );
+			assertTrue( "Expecting message is IPipeMessage", message2 is IPipeMessage );
+			assertTrue( "Expecting filter is Filter", filter is Filter );
+   			assertTrue( "Expecting failed to write bad message", written1 == false );
+   			assertTrue( "Expecting wrote good message", written2 == true );
+   			assertTrue( "Expecting received 1 messages", messagesReceived.length == 1 );
+
+   			// test filtered message assertions (message with good auth token passed
+   			var recieved:IPipeMessage = messagesReceived.shift() as IPipeMessage;
+   			assertTrue( "Expecting recieved is IPipeMessage", recieved is IPipeMessage );
+   			assertTrue( "Expecting recieved === message2", recieved === message2 ); // object equality
 
    		}
 
