@@ -36,6 +36,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			var ts:TestSuite = new TestSuite();
    			
    			ts.addTest( new TeeSplitTest( "testConnectingAndDisconnectingIOPipes" ) );
+   			ts.addTest( new TeeSplitTest( "testDisconnectFitting" ) );
    			ts.addTest( new TeeSplitTest( "testReceiveMessagesFromTwoTeeSplitOutputs" ) );
    			return ts;
    		}
@@ -85,6 +86,58 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
    			assertTrue( "Expecting disconnected pipe 2", teeSplit.disconnect() === pipe2 );
    			assertTrue( "Expecting disconnected pipe 1", teeSplit.disconnect() === pipe1 );
    		}
+
+  		/**
+  		 * Test disconnectFitting method.
+  		 * 
+  		 * <P>
+  		 * Connect several output pipes to a splitting tee. 
+  		 * Then disconnect specific outputs, making sure that once
+  		 * a fitting is disconnected using disconnectFitting, that
+  		 * it isn't returned when disconnectFitting is called again. 
+  		 * Finally, make sure that the when a message is sent to 
+  		 * the tee that the correct number of output messages is
+  		 * written.
+  		 * </P>
+  		 */
+  		public function testDisconnectFitting():void 
+  		{
+  			messagesReceived = new Array();
+  			
+  			// create input pipe
+   			var input1:IPipeFitting = new Pipe();
+
+  			// create output pipes 1, 2, 3 and 4
+   			var pipe1:IPipeFitting = new Pipe();
+   			var pipe2:IPipeFitting = new Pipe();
+   			var pipe3:IPipeFitting = new Pipe();
+   			var pipe4:IPipeFitting = new Pipe();
+			
+			// setup pipelisteners 
+   			pipe1.connect( new PipeListener( this,callBackMethod ) );
+   			pipe2.connect( new PipeListener( this,callBackMethod ) );
+   			pipe3.connect( new PipeListener( this,callBackMethod ) );
+   			pipe4.connect( new PipeListener( this,callBackMethod ) );
+ 
+  			// create splitting tee 
+   			var teeSplit:TeeSplit = new TeeSplit( );
+   			
+   			// add outputs
+   			teeSplit.connect( pipe1 );
+   			teeSplit.connect( pipe2 );
+   			teeSplit.connect( pipe3 );
+   			teeSplit.connect( pipe4 );
+
+   			// test assertions
+   			assertTrue( "Expecting teeSplit.disconnectFitting(pipe4) === pipe4", teeSplit.disconnectFitting(pipe4) === pipe4 );
+   			assertTrue( "Expecting teeSplit.disconnectFitting(pipe4) == null", teeSplit.disconnectFitting(pipe4) == null );
+			
+			// Write a message to the tee 
+			teeSplit.write(new Message(Message.NORMAL));
+			
+			// test assertions 			
+   			assertTrue( "Expecting messagesReceived.length == 3", messagesReceived.length == 3);
+   		}
   		
   		
   		/**
@@ -92,6 +145,8 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
   		 */
   		public function testReceiveMessagesFromTwoTeeSplitOutputs():void 
   		{
+  			messagesReceived = new Array();
+  			
 			// create a message to send on pipe 1
    			var message:IPipeMessage = new Message( Message.NORMAL, { testProp: 1 });
   			
@@ -141,7 +196,7 @@ package org.puremvc.as3.multicore.utilities.pipes.plumbing
 		 * Used by <code>callBackMedhod</code> as a place to store
 		 * the recieved messages.</P>
 		 */     		
-   		private var messagesReceived:Array = new Array();
+   		private var messagesReceived:Array;
    		
    		/**
    		 * Callback given to <code>PipeListener</code> for incoming message.
